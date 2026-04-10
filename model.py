@@ -1,25 +1,38 @@
+import numpy as np
 
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report
+# Sample dataset (you can replace with your own)
+X = np.array([[1], [2], [3], [4], [5]])   # features
+y = np.array([2, 4, 6, 8, 10])            # labels
 
-# Load data
-df = pd.read_csv('data.csv')
+# Initialize parameters
+w = 0.0   # weight
+b = 0.0   # bias
 
-# Encode target
-df['quality'] = df['quality'].map({'Pass': 0, 'Fail': 1})
+# Hyperparameters
+learning_rate = 0.01
+epochs = 1000
 
-X = df.drop('quality', axis=1)
-y = df['quality']
+n = len(X)
 
-# Split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Training loop
+for i in range(epochs):
+    y_pred = w * X + b
 
-# Model
-model = RandomForestClassifier(n_estimators=200, max_depth=15, random_state=42)
-model.fit(X_train, y_train)
+    # Compute loss (Mean Squared Error)
+    loss = (1/n) * np.sum((y_pred - y)**2)
 
-# Evaluate
-y_pred = model.predict(X_test)
-print(classification_report(y_test, y_pred))
+    # Compute gradients
+    dw = (2/n) * np.sum((y_pred - y) * X)
+    db = (2/n) * np.sum(y_pred - y)
+
+    # Update parameters
+    w = w - learning_rate * dw
+    b = b - learning_rate * db
+
+    if i % 100 == 0:
+        print(f"Epoch {i}, Loss: {loss:.4f}")
+
+print("\nFinal parameters:")
+print("Weight:", w)
+print("Bias:", b)
+
